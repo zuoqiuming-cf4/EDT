@@ -1,0 +1,24 @@
+name: Sync Fork
+
+on:
+  schedule:
+    # 每天 UTC 00:00 检查一次
+    # 北京时间 / 中国标准时间 08:00
+    - cron: '0 0 * * *'
+
+  # 允许手动执行
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Sync with upstream
+        run: |
+          gh repo sync ${{ github.repository }} -b main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
