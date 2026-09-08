@@ -1,4 +1,4 @@
-const Version = '2026-08-11 14:45:22';
+const Version = '2026-09-04 16:24:13';
 let config_JSON, 缓存SOCKS5白名单 = null, 调试日志打印 = false;
 let SOCKS5白名单 = ['*tapecontent.net', '*cloudatacdn.com', '*loadshare.org', '*cdn-centaurus.com', 'scholar.google.com'];
 const Pages静态页面 = 'https://rabbiecn-bot.github.io/EDT-Pages.github.io';
@@ -25,7 +25,7 @@ const countryMap = {
   "中国香港": ["香港", "HK", "Hong Kong"],
   "中国澳门": ["澳门", "中国澳门", "MO", "Macau", "Macao"],
   "中国台湾": ["台湾", "台北", "TW", "Taiwan", "Taipei"],
-  "英国": ["英国", "GB","UK", "United Kingdom", "London"],
+  "英国": ["英国", "UK","GB", "United Kingdom", "London"],
   "德国": ["德国", "DE", "Germany", "Frankfurt"],
   "法国": ["法国", "FR", "France", "Paris"],
   "荷兰": ["荷兰", "NL", "Netherlands", "Amsterdam"],
@@ -539,7 +539,7 @@ export default {
 					const 订阅转换后端请求订阅 = 请求TOKEN === 今日订阅转换后端专属TOKEN || 请求TOKEN === 昨日订阅转换后端专属TOKEN;
 					if (用户客户端请求订阅 || 订阅转换后端请求订阅 || 作为优选订阅生成器) {
 						config_JSON = await 读取config_JSON(env, host, userID, UA);
-						if (作为优选订阅生成器) ctx.waitUntil(请求日志记录(env, request, 访问IP, 'Get_Best_SUB', config_JSON, false,true));
+						if (作为优选订阅生成器) ctx.waitUntil(请求日志记录(env, request, 访问IP, 'Get_Best_SUB', config_JSON,false,true));
 						else ctx.waitUntil(请求日志记录(env, request, 访问IP, 'Get_SUB', config_JSON,false,true));
 						const ua = UA.toLowerCase();
 						//当前时间 UTC+8(精确到时分秒)
@@ -625,7 +625,6 @@ export default {
 						// ===== 本月流量解析 =====
 						function 获取已用流量(host, analytics) {
 							if (!analytics || !host) return null;
-
 							const lines = analytics.split('\n');
 							for (const line of lines) {
 							const m = line.match(/^(\S+)\s+流量:\s+([\d.]+)(?:\/[\d.-]+)?\s+MB/);
@@ -639,13 +638,13 @@ export default {
 							}
 							return null;
 						}
+
 						const responseHeaders = {
 							"content-type": "text/plain; charset=utf-8",
 							"Profile-Update-Interval": config_JSON.优选订阅生成.SUBUpdateTime,
 							"Profile-web-page-url": 'https://dash.rabbiewu.com/',
 							"Cache-Control": "no-store",
 						};
-
 						if (config_JSON.CF.Usage.success) {
 							const pagesSum = config_JSON.CF.Usage.pages;
 							const workersSum = config_JSON.CF.Usage.workers;
@@ -684,7 +683,8 @@ export default {
 						let 订阅内容 = '';
 						if (订阅类型 === 'mixed') {
 							const TLS分片参数 = config_JSON.TLS分片 == 'Shadowrocket' ? `&fragment=${encodeURIComponent('1,40-60,30-50,tlshello')}` : config_JSON.TLS分片 == 'Happ' ? `&fragment=${encodeURIComponent('3,1,tlshello')}` : '';
-							let 完整优选IP = [], 其他节点LINK = '', 反代IP池 = [];							
+							let 完整优选IP = [], 其他节点LINK = '', 反代IP池 = [];
+
 							if (!url.searchParams.has('sub') && config_JSON.优选订阅生成.local) { // 本地生成订阅
 								let 完整优选列表 = [];
 								const kvData = await env.KV.get('ADD.txt');//更改后的代码
@@ -910,7 +910,7 @@ export default {
 											`${账号}`
 										);
 									}
-
+									// ===== 自动替换备注 =====更改1
 									// 到期时间
 									if (节点备注.includes('到期')) {
 										const 到期 = 获取到期时间(
@@ -923,6 +923,13 @@ export default {
 												`到期:${到期}`
 											);
 										}
+									}
+									// 更新时间
+									if (节点备注.includes('更新')) {
+										节点备注 = 节点备注.replace(
+											/更新\S*/g,
+											`更新:${nowDate}`
+										);
 									}
 									// 本月已用流量
 									if (节点备注.includes('已用')) {
@@ -947,13 +954,6 @@ export default {
 												`已用:${流量} | ${天数}天`
 											);
 										}
-									}
-
-									if (节点备注.includes('更新')) {
-										节点备注 = 节点备注.replace(
-											/更新\S*/g,
-											`更新:${nowDate}`
-										);
 									}
 
 								} else {
@@ -991,11 +991,12 @@ export default {
 									return `${协议类型}://${btoa(config_JSON.SS.加密方式 + ':00000000-0000-4000-8000-000000000000')}@${节点地址}:${节点端口}?plugin=v2${encodeURIComponent('ray-plugin;mode=websocket;host=example.com;path=' + (config_JSON.随机路径 ? 随机路径(完整节点路径) : 完整节点路径) + (config_JSON.SS.TLS ? ';tls' : '')) + ECHLINK参数 + TLS分片参数}#${encodeURIComponent(节点备注)}`;
 								} else {
 									const 传输路径参数值 = 获取传输路径参数值(config_JSON, 完整节点路径, 作为优选订阅生成器);
-									return `${协议类型}://00000000-0000-4000-8000-000000000000@${节点地址}:${节点端口}?security=tls&type=${传输协议 + ECHLINK参数}&${域名字段名}=example.com&fp=${config_JSON.Fingerprint}&sni=example.com&${路径字段名}=${encodeURIComponent(传输路径参数值) + TLS分片参数}&encryption=none#${encodeURIComponent(节点备注)}`;
+									return `${协议类型}://00000000-0000-4000-8000-000000000000@${节点地址}:${节点端口}?security=tls&type=${传输协议 + ECHLINK参数}&${域名字段名}=example.com&fp=${config_JSON.Fingerprint}&sni=example.com&${路径字段名}=${encodeURIComponent(传输路径参数值) + TLS分片参数}&encryption=none&alpn=${encodeURIComponent(config_JSON.ALPN)}#${encodeURIComponent(节点备注)}`;
 								}
 							}).filter(item => item !== null).join('\n')
 							+ (其他节点LINK ? '\n' + 其他节点LINK.trim() : '');
 							订阅内容 = 最终统一编号(订阅内容);//其他节点LINK放最后更改2
+
 						} else { // 订阅转换
 							const 订阅转换URL = `${config_JSON.订阅转换配置.SUBAPI}/sub?target=${订阅类型}&url=${encodeURIComponent(url.protocol + '//' + url.host + '/sub?target=mixed&token=' + 今日订阅转换后端专属TOKEN + '&cnIspCode=' + 识别运营商(request) + (url.searchParams.has('sub') && url.searchParams.get('sub') != '' ? `&sub=${url.searchParams.get('sub')}` : ''))}&config=${encodeURIComponent(config_JSON.订阅转换配置.SUBCONFIG)}&emoji=${config_JSON.订阅转换配置.SUBEMOJI}&list=${config_JSON.订阅转换配置.SUBLIST}&scv=${config_JSON.跳过证书验证}&xudp=${config_JSON.订阅转换配置.XUDP}&udp=${config_JSON.订阅转换配置.UDP}&tls13=${config_JSON.订阅转换配置.TLS13}&append_type=${config_JSON.订阅转换配置.APPEND_TYPE}&sort=${config_JSON.订阅转换配置.SORT}`;
 							try {
@@ -1307,12 +1308,12 @@ function 处理叉HTTPUDP请求(首包, reader, request, 反代上下文, respon
 				log(`[叉HTTP转发] 处理失败: ${err?.message || err}`);
 				closeSocketQuietly(叉桥);
 			} finally {
-			const 保持木马UDP反代下行 = !转发失败 && 首包.协议 === 'trojan' && 木马UDP上下文.反代地址 && 木马UDP上下文.反代Socket;
-			if (!保持木马UDP反代下行) {
-				try { 木马UDP上下文.反代Socket?.close() } catch (e) { }
-				closeSocketQuietly(叉桥);
-			}
-			try { reader.releaseLock() } catch (e) { }
+				const 保持木马UDP反代下行 = !转发失败 && 首包.协议 === 'trojan' && 木马UDP上下文.反代地址 && 木马UDP上下文.反代Socket;
+				if (!保持木马UDP反代下行) {
+					try { 木马UDP上下文.反代Socket?.close() } catch (e) { }
+					closeSocketQuietly(叉桥);
+				}
+				try { reader.releaseLock() } catch (e) { }
 			}
 		},
 		cancel() {
@@ -1359,7 +1360,7 @@ function 开始TCP连接世代(remoteConnWrapper) {
 }
 
 async function 读取叉HTTP首包(reader, token) {
-	const decoder = VLESS文本解码器;
+	const decoder = 魏烈思文本解码器;
 
 	const 尝试解析魏烈思首包 = (data) => {
 		const length = data.byteLength;
@@ -1877,7 +1878,7 @@ async function 处理WS请求(request, yourUUID, url, 反代上下文 = {}) {
 		while (WS本地测速请求缓存.byteLength) {
 			const headerEnd = 查找HTTP请求头结尾(WS本地测速请求缓存);
 			if (headerEnd === -1) return;
-			const headerText = VLESS文本解码器.decode(WS本地测速请求缓存.subarray(0, headerEnd));
+			const headerText = 魏烈思文本解码器.decode(WS本地测速请求缓存.subarray(0, headerEnd));
 			const contentLengthMatch = headerText.match(/(?:^|\r\n)content-length\s*:\s*(\d+)/i);
 			const contentLength = contentLengthMatch ? Number(contentLengthMatch[1]) : 0;
 			const requestLength = headerEnd + contentLength;
@@ -2465,7 +2466,7 @@ function 解析木马请求(buffer, passwordPlainText) {
 }
 
 const UUID字节缓存 = new Map();
-const VLESS文本解码器 = new TextDecoder();
+const 魏烈思文本解码器 = new TextDecoder();
 
 function 读取十六进制半字节(code) {
 	if (code >= 48 && code <= 57) return code - 48;
@@ -2534,7 +2535,7 @@ function 解析魏烈思请求(chunk, token) {
 			addrLen = data[addrValIdx];
 			addrValIdx += 1;
 			if (length < addrValIdx + addrLen) return { hasError: true, message: 'Invalid domain data' };
-			hostname = VLESS文本解码器.decode(data.subarray(addrValIdx, addrValIdx + addrLen));
+			hostname = 魏烈思文本解码器.decode(data.subarray(addrValIdx, addrValIdx + addrLen));
 			break;
 		case 3:
 			addrLen = 16;
@@ -4306,6 +4307,7 @@ class TlsClient {
 		/** @type {{ namedCurve: number, serverPublicKey: Uint8Array } | null} */
 		let serverKeyExchange = null;
 		let sawServerHelloDone = !1;
+		let clientCertRequested = !1;
 		if (await this.readHandshakeUntil(reader, (async message => {
 			switch (message.type) {
 				case HANDSHAKE_TYPE_CERTIFICATE: {
@@ -4321,7 +4323,8 @@ class TlsClient {
 				case HANDSHAKE_TYPE_SERVER_HELLO_DONE:
 					return this.recordHandshake(message.raw), sawServerHelloDone = !0, 1;
 				case HANDSHAKE_TYPE_CERTIFICATE_REQUEST:
-					throw new Error("Client certificate is not supported");
+					this.recordHandshake(message.raw), clientCertRequested = !0;
+					break;
 				default:
 					this.recordHandshake(message.raw)
 			}
@@ -4334,6 +4337,10 @@ class TlsClient {
 		if (!keyShare) throw new Error(`Missing key pair for curve: 0x${serverKeyExchangeData.namedCurve.toString(16)}`);
 		const preMasterSecret = await deriveSharedSecret(keyShare.keyPair.privateKey, serverKeyExchangeData.serverPublicKey, curveName),
 			clientKeyExchange = buildHandshakeMessage(HANDSHAKE_TYPE_CLIENT_KEY_EXCHANGE, tlsBytes(keyShare.publicKeyRaw.length, keyShare.publicKeyRaw));
+		if (clientCertRequested) {
+			const emptyCertificate = buildHandshakeMessage(HANDSHAKE_TYPE_CERTIFICATE, tlsBytes(0, 0, 0));
+			this.recordHandshake(emptyCertificate), await writer.write(buildTlsRecord(CONTENT_TYPE_HANDSHAKE, emptyCertificate))
+		}
 		this.recordHandshake(clientKeyExchange);
 		const hashName = this.cipherConfig.hash;
 		this.masterSecret = await tls12Prf(preMasterSecret, "master secret", concatBytes(this.clientRandom, this.serverRandom), 48, hashName);
@@ -4381,6 +4388,7 @@ class TlsClient {
 		if (!this.cipherConfig.chacha) [this.clientHandshakeCryptoKey, this.serverHandshakeCryptoKey] = await Promise.all([importAesGcmKey(this.clientHandshakeKey, ["encrypt"]), importAesGcmKey(this.serverHandshakeKey, ["decrypt"])]);
 		const serverFinishedKey = await hkdfExpandLabel(hashName, serverHandshakeTrafficSecret, "finished", EMPTY_BYTES, hashLen);
 		let serverFinishedReceived = !1;
+		let clientCertRequested = !1;
 		const handleHandshakeMessage = async message => {
 			switch (message.type) {
 				case HANDSHAKE_TYPE_ENCRYPTED_EXTENSIONS: {
@@ -4395,7 +4403,8 @@ class TlsClient {
 					break
 				}
 				case HANDSHAKE_TYPE_CERTIFICATE_REQUEST:
-					throw new Error("Client certificate is not supported");
+					this.recordHandshake(message.raw), clientCertRequested = !0;
+					break;
 				case HANDSHAKE_TYPE_CERTIFICATE_VERIFY:
 					this.recordHandshake(message.raw);
 					break;
@@ -4432,10 +4441,12 @@ class TlsClient {
 			serverAppTrafficSecret = await hkdfExpandLabel(hashName, masterSecret, "s ap traffic", applicationTranscriptHash, hashLen);
 		[this.clientAppKey, this.clientAppIv] = await deriveTrafficKeys(hashName, clientAppTrafficSecret, keyLen, ivLen), [this.serverAppKey, this.serverAppIv] = await deriveTrafficKeys(hashName, serverAppTrafficSecret, keyLen, ivLen);
 		if (!this.cipherConfig.chacha) [this.clientAppCryptoKey, this.serverAppCryptoKey] = await Promise.all([importAesGcmKey(this.clientAppKey, ["encrypt"]), importAesGcmKey(this.serverAppKey, ["decrypt"])]);
+		let clientFlightHandshake = EMPTY_BYTES;
+		if (clientCertRequested) clientFlightHandshake = buildHandshakeMessage(HANDSHAKE_TYPE_CERTIFICATE, tlsBytes(0, 0, 0, 0)), this.recordHandshake(clientFlightHandshake);
 		const clientFinishedKey = await hkdfExpandLabel(hashName, clientHandshakeTrafficSecret, "finished", EMPTY_BYTES, hashLen),
 			clientFinishedVerifyData = await hmac(hashName, clientFinishedKey, await digestBytes(hashName, this.transcript())),
 			clientFinishedMessage = buildHandshakeMessage(HANDSHAKE_TYPE_FINISHED, clientFinishedVerifyData);
-		this.recordHandshake(clientFinishedMessage), await writer.write(buildTlsRecord(CONTENT_TYPE_APPLICATION_DATA, await this.encryptTls13Handshake(concatBytes(clientFinishedMessage, [CONTENT_TYPE_HANDSHAKE])))), this.clientSeqNum = 0n, this.serverSeqNum = 0n
+		this.recordHandshake(clientFinishedMessage), await writer.write(buildTlsRecord(CONTENT_TYPE_APPLICATION_DATA, await this.encryptTls13Handshake(concatBytes(clientFlightHandshake, clientFinishedMessage, [CONTENT_TYPE_HANDSHAKE])))), this.clientSeqNum = 0n, this.serverSeqNum = 0n
 	}
 	async encryptTls12(plaintext, contentType) {
 		const sequenceNumber = this.clientSeqNum++,
@@ -6135,6 +6146,7 @@ async function 读取config_JSON(env, hostname, userID, UA = "Mozilla/5.0", 重�
 		HOSTS: [hostname],
 		UUID: userID,
 		PATH: "/",
+		ALPN: "",
 		协议类型: "v" + "le" + "ss",
 		传输协议: "ws",
 		gRPC模式: "gun",
@@ -6259,6 +6271,7 @@ async function 读取config_JSON(env, hostname, userID, UA = "Mozilla/5.0", 重�
 
 	if (env.PATH) config_JSON.PATH = env.PATH.startsWith('/') ? env.PATH : '/' + env.PATH;
 	else if (!config_JSON.PATH) config_JSON.PATH = '/';
+	if (!config_JSON.ALPN) config_JSON.ALPN = "";
 
 	if (!config_JSON.gRPC模式) config_JSON.gRPC模式 = 'gun';
 	if (!config_JSON.SS) config_JSON.SS = { 加密方式: "aes-128-gcm", TLS: false };
