@@ -892,6 +892,18 @@ export default {
 
 										节点备注 = originalRemark;
 									}
+									if (节点备注.includes('账号')) {
+										//加判断是否邮箱号
+										const subName = config_JSON?.优选订阅生成?.SUBNAME || '';
+										const 账号 = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(subName)
+											? subName
+											: '？未注册';
+
+										节点备注 = 节点备注.replace(
+											/账号\S*/g,
+											`${账号}`
+										);
+									}
 									// ===== 自动替换备注 =====更改1
 									// 到期时间
 									if (节点备注.includes('到期')) {
@@ -6154,8 +6166,8 @@ async function 读取config_JSON(env, hostname, userID, UA = "Mozilla/5.0", 重�
 				指定端口: -1,
 			},
 			SUB: null,
-			SUBNAME: "edge" + "tunnel",
-			SUBUpdateTime: 3, // 订阅更新时间（小时）
+			SUBNAME: "小莫面板",
+			SUBUpdateTime: 24, // 订阅更新时间（小时）
 			TOKEN: await MD5MD5(hostname + userID),
 		},
 		订阅转换配置: {
@@ -7099,7 +7111,7 @@ async function nginx() {
 	<html lang="zh-CN">
 	<head>
 	<meta charset="UTF-8">
-	<title>服务说明</title>
+	<title>小莫面板</title>
 	<style>
 		body {
 		margin: 0;
