@@ -1,4 +1,4 @@
-const Version = '2026-09-22 20:01:17';
+const Version = '2026-09-24 20:01:17';
 let config_JSON, 缓存SOCKS5白名单 = null, 调试日志打印 = false;
 let SOCKS5白名单 = ['*tapecontent.net', '*cloudatacdn.com', '*loadshare.org', '*cdn-centaurus.com', 'scholar.google.com'];
 const Pages静态页面 = 'https://rabbiecn-bot.github.io/EDT-Pages.github.io';
@@ -739,7 +739,8 @@ export default {
 								const 原始其他节点数组 =
 								    [...new Set(其他节点)];
 								const allowMap = {};
-								const raw = (env.ALLOW_COUNTRIES || '').trim();
+								
+								const raw = ((await env.KV.get('ALLOW_COUNTRIES')) || '').trim();
 								if (raw) {
 								    raw.split(',').forEach(item => {
 								        const m = item.trim().match(/^(.+?)(\d+)$/);
@@ -748,6 +749,7 @@ export default {
 								        }
 								    });
 								}
+
 								// API国家池
 								const apiCountryPool = {};
 								const apiFinalNodes = [];
