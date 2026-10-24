@@ -36,6 +36,7 @@ const countryMap = {
   "越南": ["越南", "VN", "Vietnam", "Hanoi"],
   "泰国": ["泰国", "TH", "Thailand", "Bangkok"],
   "马来西亚": ["马来西亚", "MY", "Malaysia", "Kuala Lumpur"],
+  "爱沙尼亚": ["爱沙尼亚", "EE", "Estonia", "Tallinn"],
   "菲律宾": ["菲律宾", "PH", "Philippines", "Manila"],
   "印尼": ["印尼", "ID", "Indonesia", "Jakarta"],
   "阿联酋": ["阿联酋", "AE", "UAE", "Dubai"],
@@ -77,6 +78,7 @@ const flagMap = {
   "越南": "🇻🇳",
   "泰国": "🇹🇭",
   "马来西亚": "🇲🇾",
+  "爱沙尼亚": "🇪🇪"
   "菲律宾": "🇵🇭",
   "印尼": "🇮🇩",
   "阿联酋": "🇦🇪",
